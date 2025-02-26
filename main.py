@@ -14,10 +14,10 @@ colorama.init(autoreset=True)
 class AnimeAI:
     def __init__(self, config=None):
         """
-        Inisialisasi AI dengan tema anime
+        Initialize the Anime AI assistant with a given configuration.
         
         Args:
-            config (dict, optional): Konfigurasi untuk AI. Jika None, akan menggunakan konfigurasi default anime
+            config (dict, optional): Configuration for the AI. If None, the default anime configuration will be used.
         """
         # Buat session ID unik
         self.session_id = f"session-{uuid.uuid4().hex[:8]}"
@@ -79,7 +79,12 @@ class AnimeAI:
         self.style = self.generate_system_instruction()
         
     def generate_system_instruction(self):
-        """Membuat system instruction berdasarkan konfigurasi"""
+        """
+        Generate system instructions based on the current configuration.
+        
+        Returns:
+            str: Encoded system instruction.
+        """
         instruction = f"Nama kamu adalah {self.config['name']}, kamu adalah {self.config['role']} yang {self.config['personality']}. "
         instruction += f"Kamu memiliki pengetahuan tentang {self.config['knowledge']}. "
         instruction += f"Kamu {self.config['limitations']}. "
@@ -94,7 +99,12 @@ class AnimeAI:
         return requests.utils.quote(instruction)
         
     def save_config(self):
-        """Menyimpan konfigurasi saat ini ke file"""
+        """
+        Save the current configuration to a file.
+        
+        Returns:
+            bool: True if the configuration was saved successfully, False otherwise.
+        """
         try:
             with open(self.config_path, "w", encoding="utf-8") as f:
                 json.dump(self.config, f, indent=4)
@@ -104,22 +114,45 @@ class AnimeAI:
             return False
             
     def update_config(self, new_config):
-        """Update konfigurasi dengan nilai baru"""
+        """
+        Update the configuration with new values.
+        
+        Args:
+            new_config (dict): New configuration values.
+        """
         self.config.update(new_config)
         self.style = self.generate_system_instruction()
         self.save_config()
         
     def get_random_expression(self):
-        """Dapatkan ekspresi anime acak"""
+        """
+        Get a random anime expression.
+        
+        Returns:
+            str: Random anime expression formatted with the user's name.
+        """
         expression = random.choice(self.config["expressions"])
         return expression.format(user=self.user_name)
         
     def get_random_emoji(self):
-        """Dapatkan emoji anime acak"""
+        """
+        Get a random anime emoji.
+        
+        Returns:
+            str: Random anime emoji.
+        """
         return random.choice(self.config["emojis"])
         
     def ask(self, question):
-        """Mengirim pertanyaan ke API dan mengembalikan jawaban"""
+        """
+        Send a question to the API and return the answer.
+        
+        Args:
+            question (str): The question to ask the AI.
+        
+        Returns:
+            str: The AI's response.
+        """
         # Buat URL API dengan parameter
         api_url = f"{self.config['base_url']}?ask={requests.utils.quote(question)}&style={self.style}&sessionId={self.session_id}&model=qwen-max-latest&mode=t2t"
         
@@ -161,7 +194,15 @@ class AnimeAI:
             return f"Error: {str(e)} {self.get_random_emoji()}"
             
     def save_conversation(self, filename="anime_conversation.txt"):
-        """Menyimpan riwayat percakapan ke file"""
+        """
+        Save the conversation history to a file.
+        
+        Args:
+            filename (str, optional): The name of the file to save the conversation history. Defaults to "anime_conversation.txt".
+        
+        Returns:
+            bool: True if the conversation history was saved successfully.
+        """
         with open(filename, "w", encoding="utf-8") as file:
             file.write(f"Riwayat Percakapan dengan {self.config['name']} (Session ID: {self.session_id})\n")
             file.write("="*50 + "\n\n")
@@ -181,7 +222,12 @@ class AnimeAI:
 
 
 def interactive_language_selection():
-    """Memilih bahasa interaktif"""
+    """
+    Select the language interactively.
+    
+    Returns:
+        str: Selected language code ("id" for Indonesian, "en" for English).
+    """
     print(f"{Fore.YELLOW}\n=== Pilih Bahasa / Select Language ===")
     print(f"{Fore.CYAN}1. Bahasa Indonesia")
     print(f"{Fore.CYAN}2. English")
@@ -191,7 +237,12 @@ def interactive_language_selection():
     return "id"
 
 def print_anime_banner(language):
-    """Menampilkan banner anime untuk terminal"""
+    """
+    Display an anime banner in the terminal.
+    
+    Args:
+        language (str): The language code ("id" for Indonesian, "en" for English).
+    """
     if language == "en":
         banner = f"""
 {Fore.MAGENTA}★゜・。。・゜゜・。。・゜☆゜・。。・゜゜・。。・゜★゜・。。・゜゜・。。・゜☆
@@ -219,18 +270,35 @@ def print_anime_banner(language):
     print(banner)
 
 def print_typing_animation(text, delay=0.03, color=Fore.CYAN):
-    """Menampilkan teks dengan efek typing anime"""
+    """
+    Display text with a typing animation effect.
+    
+    Args:
+        text (str): The text to display.
+        delay (float, optional): Delay between each character. Defaults to 0.03.
+        color (str, optional): Color of the text. Defaults to Fore.CYAN.
+    """
     for char in text:
         print(color + char, end='', flush=True)
         time.sleep(delay)
     print(Style.RESET_ALL)
 
 def clear_screen():
-    """Membersihkan layar terminal"""
+    """
+    Clear the terminal screen.
+    """
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def interactive_anime_config(language):
-    """Wizard interaktif untuk mengatur konfigurasi AI anime"""
+    """
+    Interactive wizard to set up the anime AI configuration.
+    
+    Args:
+        language (str): The language code ("id" for Indonesian, "en" for English).
+    
+    Returns:
+        dict: The custom configuration.
+    """
     if language == "en":
         print(f"{Fore.YELLOW}\n=== Anime AI Character Configuration ===")
     else:
@@ -273,7 +341,12 @@ def interactive_anime_config(language):
     return config
 
 def print_anime_help(language):
-    """Menampilkan bantuan penggunaan dengan gaya anime"""
+    """
+    Display help information in an anime style.
+    
+    Args:
+        language (str): The language code ("id" for Indonesian, "en" for English).
+    """
     if language == "en":
         help_text = f"""
 {Fore.YELLOW}=== Available Commands ===
